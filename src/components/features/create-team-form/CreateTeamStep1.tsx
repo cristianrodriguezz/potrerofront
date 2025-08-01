@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { CreateTeamFormSchema, CreateTeamFormType } from "@/lib/schemas/validation";
 import { useTeamAvailability } from "@/hooks/useTeamAvailability";
 import { AvailabilityFeedback } from "@/components/ui/AvailabilityFeedback";
+import { useEffect } from "react";
 
 export const CreateTeamStep1 = () => {
   // Obtenemos las acciones y datos de nuestra tienda genérica
@@ -47,6 +48,11 @@ export const CreateTeamStep1 = () => {
     if (!isAliasAvailable || !isTeamNameAvailable) return; // No avanza si hay errores de disponibilidad
     nextStep();       // Avanza al siguiente
   };
+
+  useEffect(() => {
+    // Usamos el método setFocus de react-hook-form para poner el foco en el campo 'team_name'
+    form.setFocus('team_name');
+  }, [form.setFocus]);
 
   return (
     <Form {...form}>
@@ -81,7 +87,11 @@ export const CreateTeamStep1 = () => {
             <FormItem>
               <FormLabel>Alias (Opcional)</FormLabel>
               <FormControl>
-                <Input placeholder="Ej: LHAL" {...field} />
+                <Input
+                  placeholder="Ej: LHAL"
+                  {...field}
+                  onChange={(e) => field.onChange(e.target.value.toUpperCase())}
+                />
               </FormControl>
               <AvailabilityFeedback
                 isLoading={isAliasLoading}
