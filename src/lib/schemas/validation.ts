@@ -18,7 +18,7 @@ export const MatchStatusSchema = z.enum(['draft','published','confirmed','schedu
 export const UserSchema = z.object({
   role: UserRoleSchema,
   auth_provider: AuthProviderSchema,
-  id: z.string().uuid(),
+  id: z.uuid(),
   first_name: z.string().nullable(),
   last_name: z.string().nullable(),
   username: z.string().nullable(),
@@ -33,7 +33,7 @@ export const UserSchema = z.object({
 });
 
 export const VenueSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   name: z.string(),
   alias: z.string().nullable(),
   address: z.string().nullable(),
@@ -81,19 +81,18 @@ export const MatchSchema = z.object({
 /**
  * Schema para el formulario de registro de un nuevo usuario.
  */
-export const UserRegisterFormSchema = UserSchema.pick({
-  email: true,
-  first_name: true,
-  last_name: true,
-  username: true,
-}).extend({
-  // Sobreescribimos email para que sea obligatorio
-  email: z.string().email('Por favor, introduce un email válido.'),
+export const UserRegisterFormSchema = z.object({
+  email: z
+    .string()
+    .email('Por favor, introduce un email válido.')
+    .refine((email) => !email.endsWith('@yopmail.com'), {
+      message: 'No se permite yopmail.com.',
+    }),
   password: z.string().min(8, 'La contraseña debe tener al menos 8 caracteres.'),
   confirmPassword: z.string(),
 }).refine(data => data.password === data.confirmPassword, {
   message: "Las contraseñas no coinciden",
-  path: ["confirmPassword"], // Asigna el error al campo de confirmación
+  path: ["confirmPassword"],
 });
 
 // Exportamos el tipo inferido para usarlo con React Hook Form
@@ -104,7 +103,7 @@ export type UserRegisterFormType = z.infer<typeof UserRegisterFormSchema>;
  * Schema para el formulario de inicio de sesión.
  */
 export const UserLoginFormSchema = z.object({
-  email: z.string().email('Por favor, introduce un email válido.'),
+  email: z.email('Por favor, introduce un email válido.'),
   password: z.string().nonempty('La contraseña es requerida.'),
 });
 
@@ -134,10 +133,10 @@ export const CreateTeamFormSchema = TeamSchema.pick({
   alias: true,
 }).extend({
   team_name: z.string().min(3, 'El nombre del equipo es muy corto.'),
+  alias: z.string().min(3, 'El alias es requerido (ej: LHAL).').max(20, 'El alias no puede tener más de 20 caracteres.'),
 });
 
 export type CreateTeamFormType = z.infer<typeof CreateTeamFormSchema>;
-
 
 /**
  * Schema para reportar el resultado de un partido.
@@ -149,5 +148,7 @@ export const ReportMatchScoreFormSchema = MatchSchema.pick({
   score_team_a: z.coerce.number().int().min(0, 'El resultado no puede ser negativo.'),
   score_team_b: z.coerce.number().int().min(0, 'El resultado no puede ser negativo.'),
 });
+
+
 
 export type ReportMatchScoreFormType = z.infer<typeof ReportMatchScoreFormSchema>;
