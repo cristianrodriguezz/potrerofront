@@ -35,9 +35,6 @@ export const CreateTeamStep1 = () => {
   const alias = form.watch('alias');
 
   const {
-    isTeamNameLoading,
-    isTeamNameAvailable,
-    teamNameError,
     isAliasLoading,
     isAliasAvailable,
     aliasError,
@@ -45,7 +42,7 @@ export const CreateTeamStep1 = () => {
 
   const onSubmit = (data: CreateTeamFormType): void => {
     setFormData(data); // Guarda los datos de este paso
-    if (!isAliasAvailable || !isTeamNameAvailable) return; // No avanza si hay errores de disponibilidad
+    if (!isAliasAvailable || isAliasLoading) return; // Si el alias no está disponible, no avanzamos
     nextStep();       // Avanza al siguiente
   };
 
@@ -60,22 +57,12 @@ export const CreateTeamStep1 = () => {
         <FormField
           control={form.control}
           name="team_name"
-          render={({ field, fieldState  }) => (
+          render={({ field }) => (
             <FormItem>
               <FormLabel>Nombre del Equipo</FormLabel>
               <FormControl>
                 <Input placeholder="Ej: Los Halcones" {...field} />
               </FormControl>
-              <AvailabilityFeedback
-                isLoading={isTeamNameLoading}
-                isAvailable={isTeamNameAvailable}
-                isDirty={fieldState.isDirty}
-                minLength={3}
-                value={field.value}
-                loadingText="Verificando nombre..."
-                availableText="Nombre de equipo disponible"
-                errorText={teamNameError}
-              />
               <FormMessage />
             </FormItem>
           )}
@@ -85,7 +72,7 @@ export const CreateTeamStep1 = () => {
           name="alias"
           render={({ field, fieldState }) => (
             <FormItem>
-              <FormLabel>Alias (Opcional)</FormLabel>
+              <FormLabel>Alias</FormLabel>
               <FormControl>
                 <Input
                   placeholder="Ej: LHAL"
@@ -111,7 +98,7 @@ export const CreateTeamStep1 = () => {
           <Button className="w-1/2 mr-1" type="button" variant="outline" disabled={currentStep === 1} onClick={prevStep}>
             Anterior
           </Button>
-          <Button type="submit" disabled={!form.formState.isValid || !isTeamNameAvailable || !isAliasAvailable} className="w-1/2 ml-1">
+          <Button type="submit" disabled={!form.formState.isValid || !isAliasAvailable || isAliasLoading} className="w-1/2 ml-1">
             Siguiente
           </Button>
         </div>

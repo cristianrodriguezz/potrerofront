@@ -1,10 +1,13 @@
 import { create } from 'zustand';
+// 1. Importamos nuestro nuevo tipo unificado del archivo de validación
+import { FullCreateTeamType } from '@/lib/schemas/validation';
 
-// Define la estructura del estado de nuestro stepper genérico
+// Define la estructura del estado con el tipo correcto
 type MultiStepState = {
   currentStep: number;
-  formData: Record<string, unknown>; // Un objeto genérico para guardar cualquier dato
-  setFormData: (data: Record<string, unknown>) => void;
+  // Usamos Partial<> porque los datos estarán incompletos hasta el último paso
+  formData: Partial<FullCreateTeamType>;
+  setFormData: (data: Partial<FullCreateTeamType>) => void;
   nextStep: () => void;
   prevStep: () => void;
   goToStep: (step: number) => void;
@@ -13,13 +16,12 @@ type MultiStepState = {
 export const useMultiStepStore = create<MultiStepState>((set) => ({
   currentStep: 1,
   formData: {},
-  // Acción para fusionar los datos del paso actual con los datos existentes
+  // La acción ahora espera datos que coincidan con la estructura de nuestro formulario
   setFormData: (data) =>
     set((state) => ({
       formData: { ...state.formData, ...data },
     })),
-  // Acciones para navegar entre pasos
   nextStep: () => set((state) => ({ currentStep: state.currentStep + 1 })),
-  prevStep: () => set((state) => ({ currentStep: state.currentStep === 1 ? 1 : state.currentStep - 1 })),
+  prevStep: () => set((state) => ({ currentStep: state.currentStep - 1 })),
   goToStep: (step) => set({ currentStep: step }),
 }));

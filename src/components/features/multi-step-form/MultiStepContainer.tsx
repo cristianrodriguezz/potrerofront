@@ -22,11 +22,7 @@ export const MultiStepContainer = ({ children, className }: MultiStepContainerPr
   return (
     <Card className={cn("max-w-2xl sm:mx-auto", className)}>
       <CardHeader>
-        <StepProgress currentStep={currentStep} totalSteps={totalSteps} /> 
-        <CardTitle>
-          Paso {currentStep} de {children.length}
-        </CardTitle>
-        {/* Aquí podrías agregar un indicador de progreso visual */}
+        {/* <StepProgress currentStep={currentStep} totalSteps={totalSteps} />  */}
       </CardHeader>
       <CardContent>
         {activeStepComponent}

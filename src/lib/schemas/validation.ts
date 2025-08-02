@@ -133,7 +133,7 @@ export const CreateTeamFormSchema = TeamSchema.pick({
   alias: true,
 }).extend({
   team_name: z.string().min(3, 'El nombre del equipo es muy corto.'),
-  alias: z.string().min(3, 'El alias es requerido (ej: LHAL).').max(20, 'El alias no puede tener más de 20 caracteres.'),
+  alias: z.string().min(3, 'El alias es muy corto.').max(20, 'El alias no puede tener más de 20 caracteres.'),
 });
 
 export type CreateTeamFormType = z.infer<typeof CreateTeamFormSchema>;
@@ -150,5 +150,37 @@ export const ReportMatchScoreFormSchema = MatchSchema.pick({
 });
 
 
+
+export const CreateTeamStep1Schema = z.object({
+  team_name: z.string().min(3, 'El nombre del equipo es muy corto.'),
+  alias: z.string().min(2, 'El alias es requerido (ej: LHAL).'),
+});
+
+export const CreateTeamStep2Schema = z.object({
+  crest: z.object({
+    shape: z.enum(['circle', 'shield', 'square', 'hexagon', 'diamond', 'pentagon', 'star']),
+    backgroundColor: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Debe ser un color hexadecimal válido."),
+    icon: z.string(),
+    iconColor: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Debe ser un color hexadecimal válido."),
+    positionIcon: z.object({
+      x: z.number().min(-70).max(70).default(0),
+      y: z.number().min(-70).max(70).default(0),
+    }),
+    pattern: z.object({
+      type: z.enum(['none', 'stripes', 'sash', 'half', 'gradient', 'checkered']),
+      color: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Debe ser un color hexadecimal válido."),
+    }),
+  }),
+});
+
+// Combinamos los schemas de todos los pasos en uno solo.
+export const FullCreateTeamSchema = CreateTeamStep1Schema.merge(CreateTeamStep2Schema);
+
+// Exportamos el tipo inferido de todo el formulario. Este será nuestro "source of truth".
+export type FullCreateTeamType = z.infer<typeof FullCreateTeamSchema>;
+
+// --- Exportamos los tipos de cada paso por separado para usarlos en los componentes ---
+export type CreateTeamStep1Type = z.infer<typeof CreateTeamStep1Schema>;
+export type CreateTeamStep2Type = z.infer<typeof CreateTeamStep2Schema>;
 
 export type ReportMatchScoreFormType = z.infer<typeof ReportMatchScoreFormSchema>;
