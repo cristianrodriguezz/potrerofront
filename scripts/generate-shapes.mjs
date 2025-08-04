@@ -1,89 +1,83 @@
 import fs from 'fs/promises';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
-// --- CONFIGURACIÓN ---
-const shapesDir = path.join(process.cwd(), 'src/components/ui/shapes');
-const outputFile = path.join(process.cwd(), 'src/lib/shape-registry.generated.tsx');
-// --- FIN DE LA CONFIGURACIÓN ---
+// Reemplazo para __dirname en ES Modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-function toKebabCase(str) {
-  const kebab = str.replace(/([a-z0-9]|(?=[A-Z]))([A-Z])/g, '$1-$2').toLowerCase();
-  return `-${kebab}`;
-}
+// Definimos la raíz del proyecto para construir las rutas correctamente
+const projectRoot = path.join(__dirname, '..'); // Sube un nivel desde la carpeta 'scripts'
 
-function toLabelFallback(str) {
-    return str.replace(/([A-Z])/g, ' $1').trim();
-}
+const svgComponentsDir = path.join(projectRoot, 'src/components/shield-elements');
+const outputDataFile = path.join(projectRoot, 'src/data/svg-elements-data.ts');
 
-async function generateShapeRegistry() {
-  console.log('🔍 Buscando componentes de formas en:', shapesDir);
+async function generateDefinitions() {
+  try {
+    const svgFiles = (await fs.readdir(svgComponentsDir)).filter(file => file.endsWith('.tsx'));
 
-  const files = await fs.readdir(shapesDir);
-  const shapeFiles = files.filter(file => file.endsWith('.tsx') && file !== 'index.ts');
+    const componentNames = svgFiles.map(file => path.basename(file, '.tsx'));
 
-  if (shapeFiles.length === 0) {
-    console.warn('⚠️ No se encontraron componentes de formas. El archivo no se generará.');
-    return;
-  }
-
-  const shapeData = [];
-  for (const file of shapeFiles) {
-    const componentName = path.parse(file).name;
-    const filePath = path.join(shapesDir, file);
-    const fileContent = await fs.readFile(filePath, 'utf-8');
-
-    // Busca una constante exportada llamada 'shapeLabel'
-    const labelRegex = /export\s+const\s+shapeLabel\s*=\s*['"](.*?)['"]/;
-    const match = fileContent.match(labelRegex);
     
-    let label;
-    if (match && match[1]) {
-      label = match[1];
-    } else {
-      label = toLabelFallback(componentName);
-      console.warn(`⚠️ No se encontró 'export const shapeLabel' en ${file}. Usando el nombre del archivo como fallback: "${label}"`);
-    }
-
-    shapeData.push({
-      componentName,
-      kebabCaseName: toKebabCase(componentName),
-      label,
-    });
-  }
-
-  console.log(`✅ Formas encontradas: ${shapeData.map(s => s.componentName).join(', ')}`);
-
-  const imports = shapeData.map(s => `import { ${s.componentName}, shapeLabel as ${s.componentName}Label } from '@/components/ui/shapes/${s.componentName}';`).join('\n');
-  
-  const shapeNamesArray = `export const shapeNames = [${shapeData.map(s => `'${s.kebabCaseName}'`).join(', ')}, 'circle', 'square'] as const;`;
-  
-  const shapeNameType = `export type ShapeName = typeof shapeNames[number];`;
-
-  const registryObject = `
-export const shapeRegistry: Record<ShapeName, { component: React.FC<any>; label: string }> = {
-  ${shapeData.map(s => `'${s.kebabCaseName}': { component: ${s.componentName}, label: ${s.componentName}Label || '${s.label}' }`).join(',\n  ')},
-  'circle': { component: () => React.createElement('div', { className: "w-full h-full bg-current rounded-full" }), label: 'Círculo' },
-  'square': { component: () => React.createElement('div', { className: "w-full h-full bg-current rounded-lg" }), label: 'Cuadrado' },
-};`;
-
-  const fileContent = `/* eslint-disable */
-// ----------------------------------------------------------------------
-// ESTE ARCHIVO ES AUTO-GENERADO. NO LO EDITES MANUALMENTE.
-// Ejecuta 'npm run generate:shapes' para actualizarlo.
-// ----------------------------------------------------------------------
-
+    
+    const imports = componentNames.map(name => `import ${name} from '@/components/shield-elements/${name}';`).join('\n');
+    
+    const definitions = componentNames.map(name => {
+      const elementKey = name.replace(/SVG$/, '');
+      const isPaid = Math.random() > 0.5;
+      const category = 'shapes';
+      const defaultX = 0;
+      const defaultY = 0;
+      
+      return `  '${elementKey}': {
+        component: ${name},
+        isPaid: ${isPaid},
+        category: '${category}',
+        defaultX: ${defaultX},
+        defaultY: ${defaultY},
+      },`;
+    }).join('\n');
+    
+    const outputFileContent = `
 import React from 'react';
 ${imports}
 
-${shapeNamesArray}
-
-${shapeNameType}
-
-${registryObject}
-`;
-
-  await fs.writeFile(outputFile, fileContent);
-  console.log(`🎉 ¡Registro de formas generado exitosamente en ${outputFile}!`);
+// Definimos un tipo para asegurar que los componentes son válidos
+interface ElementDefinition {
+  component: React.FC<any>;
+  isPaid: boolean;
+  category: string;
+  defaultX: number;
+  defaultY: number;
 }
 
-generateShapeRegistry().catch(console.error);
+const elementDefinitions: Record<string, ElementDefinition> = {
+${definitions}
+};
+
+export const initialElements = Object.entries(elementDefinitions).map(([key, value], index) => ({
+  id: \`\${key}-\${index}\`,
+  component: value.component,
+  x: value.defaultX,
+  y: value.defaultY,
+  isPaid: value.isPaid,
+  category: value.category,
+}));
+`;
+    
+    // CORRECCIÓN: Asegurarse de que el directorio de salida exista antes de escribir el archivo.
+    const outputDir = path.dirname(outputDataFile);
+    await fs.mkdir(outputDir, { recursive: true });
+
+    await fs.writeFile(outputDataFile, outputFileContent, 'utf-8');
+    
+    console.log('SVG definitions generated successfully!');
+  } catch (error) {
+    console.error("Error al generar las definiciones:", error);
+    if (error.code === 'ENOENT') {
+      console.error(`\nError: No se pudo encontrar la carpeta '${svgComponentsDir}'. Asegúrate de que la carpeta exista y contenga tus componentes SVG.`);
+    }
+  }
+}
+
+generateDefinitions();

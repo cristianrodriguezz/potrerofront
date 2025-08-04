@@ -15,7 +15,7 @@ export type ShapeName = typeof shapeNames[number];
 
 export const shapeRegistry: Record<ShapeName, { component: React.FC<any>; label: string }> = {
   '--escudo-borrar': { component: EscudoBorrar, label: EscudoBorrarLabel || 'Escudito' },
-  '--otro-borrar': { component: OtroBorrar, label: OtroBorrarLabel || 'Otro Escudo' },
+  '--otro-borrar': { component: OtroBorrar, label: OtroBorrarLabel || 'Otro' },
   'circle': { component: () => React.createElement('div', { className: "w-full h-full bg-current rounded-full" }), label: 'Círculo' },
   'square': { component: () => React.createElement('div', { className: "w-full h-full bg-current rounded-lg" }), label: 'Cuadrado' },
 };

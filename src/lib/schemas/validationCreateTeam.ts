@@ -1,58 +1,39 @@
 import { z } from 'zod';
-// 1. Importamos los nombres de las formas desde el archivo auto-generado
 import { shapeNames } from './shape-registry.generated';
 
-// ============================================================================
-// ENUMS (Útiles para <select> en la UI y validación)
-// ============================================================================
+// ... (tus otros schemas no cambian)
 
-export const AuthProviderSchema = z.enum(['local','supabase']);
-export const UserRoleSchema = z.enum(['team_member','venue_staff','super_admin']);
-export const TeamRoleSchema = z.enum(['admin','captain','player']);
-export const VenueRoleSchema = z.enum(['owner','manager','staff']);
-export const InvitationStatusSchema = z.enum(['pending','accepted','declined']);
-export const MatchStatusSchema = z.enum(['draft','published','confirmed','scheduled','in_progress','pending_score','disputed_result','completed','cancelled']);
-
-// ============================================================================
-// SCHEMAS PARA PASOS INDIVIDUALES
-// ============================================================================
-
-export const CreateTeamStep1Schema = z.object({
-  team_name: z.string().min(3, 'El nombre del equipo es muy corto.'),
-  alias: z.string().min(2, 'El alias es requerido (ej: LHAL).'),
+// NUEVO: Definimos el schema para un único elemento del escudo
+const CrestElementSchema = z.object({
+  id: z.string().uuid(),
+  type: z.enum(['icon']),
+  name: z.string(),
+  color: z.string().regex(/^#[0-9a-fA-F]{6}$/),
+  position: z.object({
+    x: z.number(),
+    y: z.number(),
+  }),
+  // CAMBIO: Reemplazamos 'size' por 'scale' para un manejo más flexible
+  scale: z.number().min(0.5).max(3).default(1),
+  // NUEVO: Añadimos la propiedad de rotación
+  rotation: z.number().min(-180).max(180).default(0),
 });
 
+/**
+ * Schema para el segundo paso del formulario de creación de un equipo (el escudo).
+ */
 export const CreateTeamStep2Schema = z.object({
   crest: z.object({
-    // 2. Usamos el array de nombres generado para crear el enum dinámicamente
     shape: z.enum(shapeNames),
-    backgroundColor: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Debe ser un color hexadecimal válido."),
-    icon: z.string(),
-    iconColor: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Debe ser un color hexadecimal válido."),
-    positionIcon: z.object({
-      x: z.number().min(-50).max(50).default(0),
-      y: z.number().min(-50).max(50).default(0),
-    }),
+    backgroundColor: z.string().regex(/^#[0-9a-fA-F]{6}$/),
     pattern: z.object({
       type: z.enum(['none', 'stripes', 'sash', 'half', 'gradient', 'checkered']),
-      color: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Debe ser un color hexadecimal válido."),
+      color: z.string().regex(/^#[0-9a-fA-F]{6}$/),
     }),
+    // CAMBIO: Ahora tenemos un array de elementos en lugar de un solo ícono
+    elements: z.array(CrestElementSchema),
   }),
 });
 
-// ============================================================================
-// SCHEMA UNIFICADO PARA TODO EL FORMULARIO
-// ============================================================================
-
-// Combinamos los schemas de todos los pasos en uno solo.
-export const FullCreateTeamSchema = CreateTeamStep1Schema.merge(CreateTeamStep2Schema);
-
-// Exportamos el tipo inferido de todo el formulario. Este será nuestro "source of truth".
-export type FullCreateTeamType = z.infer<typeof FullCreateTeamSchema>;
-
-// ============================================================================
-// TIPOS EXPORTADOS PARA LOS COMPONENTES
-// ============================================================================
-
-export type CreateTeamStep1Type = z.infer<typeof CreateTeamStep1Schema>;
 export type CreateTeamStep2Type = z.infer<typeof CreateTeamStep2Schema>;
+export type CrestElementType = z.infer<typeof CrestElementSchema>;
