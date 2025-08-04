@@ -1,6 +1,6 @@
 import { MultiStepContainer } from "@/components/features/multi-step-form/MultiStepContainer";
 import { CreateTeamStep1 } from "@/components/features/create-team-form/CreateTeamStep1";
-import { CreateTeamStep2 } from "@/components/features/create-team-form/CreateTeamStep2";
+
 import { CreateTeamStep3 } from "@/components/features/create-team-form/CreateTeamStep3";
 // import { CreateTeamStep2 } from "@/components/features/create-team-form/CreateTeamStep2"; // Descomenta cuando crees el paso 2
 
@@ -19,7 +19,7 @@ export default function CreateTeamPage() {
         <MultiStepContainer className=" mx-1">
           {/* Cada componente aquí es un paso en el formulario */}
           <CreateTeamStep1 />
-          <CreateTeamStep2 />
+
           <CreateTeamStep3 />
           
           

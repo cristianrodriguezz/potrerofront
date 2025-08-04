@@ -113,16 +113,20 @@ const onRotateEnd = () => {
     }
 
     const elListeners = divRef.current
-    elListeners.addEventListener('pointerdown', onPointerDown)
-    elListeners.addEventListener('pointermove', onPointerMove)
-    elListeners.addEventListener('pointerup', onPointerUp)
-    elListeners.addEventListener('pointercancel', onPointerUp)
+    if (elListeners) {
+      elListeners.addEventListener('pointerdown', onPointerDown)
+      elListeners.addEventListener('pointermove', onPointerMove)
+      elListeners.addEventListener('pointerup', onPointerUp)
+      elListeners.addEventListener('pointercancel', onPointerUp)
+    }
 
     return () => {
-      elListeners.removeEventListener('pointerdown', onPointerDown)
-      elListeners.removeEventListener('pointermove', onPointerMove)
-      elListeners.removeEventListener('pointerup', onPointerUp)
-      elListeners.removeEventListener('pointercancel', onPointerUp)
+      if (elListeners) {
+        elListeners.removeEventListener('pointerdown', onPointerDown)
+        elListeners.removeEventListener('pointermove', onPointerMove)
+        elListeners.removeEventListener('pointerup', onPointerUp)
+        elListeners.removeEventListener('pointercancel', onPointerUp)
+      }
     }
   }, [id, onSelect])
 
