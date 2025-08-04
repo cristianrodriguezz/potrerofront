@@ -9,7 +9,7 @@ export default function Canvas() {
 
   const [elements, setElements] = useState(() => [
     { id: '123123123', x: 0, y: 0 },
-    { id: '123123123', x: 100, y: 100 },
+    { id: '123123d123', x: 100, y: 100 },
   ])
 
   const [selectedId, setSelectedId] = useState<string | null>(null)
