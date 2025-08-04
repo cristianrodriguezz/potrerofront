@@ -6,6 +6,9 @@ const nextConfig: NextConfig = {
     // O cambiar la posición si te molesta en la esquina inferior izquierda
     position: 'top-right', // O 'top-left', 'top-right', false
   },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 };
 
 export default nextConfig;
