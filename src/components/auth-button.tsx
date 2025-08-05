@@ -5,7 +5,7 @@ import { LogoutButton } from "./logout-button";
 import { cookies } from "next/headers";
 
 export async function AuthButton() {
-  const supabase = await createClient(cookies());
+  const supabase = await createClient();
 
   const {
     data: { user },
