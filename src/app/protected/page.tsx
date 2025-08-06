@@ -4,8 +4,8 @@ import { SignOutButton } from "@/components/sign-out-button";
 import { cookies } from "next/headers";
 
 export default async function ProtectedPage() {
-  const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
+
+  const supabase = createClient();
 
   const { data, error } = await supabase.auth.getUser();
 
