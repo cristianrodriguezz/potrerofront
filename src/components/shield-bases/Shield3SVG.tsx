@@ -1,16 +1,32 @@
-// ./components/shield-bases/Shield2SVG.tsx
-export default function Shield3SVG(props) {
+import React from "react";
+
+interface ShieldProps {
+    className?: string;
+    children?: React.ReactNode;
+    patternId?: string;
+}
+
+const Shield3SVG: React.FC<ShieldProps> = ({
+    className,
+    children,
+    patternId,
+}) => {
     return (
-        <svg version="1.1" id="Capa_1" viewBox="0 0 323.36 323.36" {...props}>
-            <g>
-                <g>
-                    <path
-                        d="M28.741,242.03c0,44.916,71.883,81.33,113.589,81.33h38.699c41.707,0,113.589-36.415,113.589-81.33
-			l11.585-138.794c0.555-6.63-3.28-14.816-8.561-18.275L166.589,2.613c-5.281-3.465-2.975-3.486-8.273-0.049L25.744,85.009
-			c-5.298,3.437-9.143,11.596-8.588,18.226L28.741,242.03z"
-                    />
-                </g>
-            </g>
+        <svg
+            id="e90JNrGnBD41"
+            viewBox="0 0 145 145"
+            className={className}
+        >
+            <defs>{children}</defs>
+            <path
+                d="M35.679024,15.68862h73.90212c1.163925,6.459066,8.430863,12.439689,13.258033,16.043942c1.010762,52.349935-18.417629,84.759209-50.216512,97.578822C42.894381,118.581966,19.33534,79.999295,22.168946,31.732562C27.315049,28.556959,34.658101,21.18383,35.679024,15.68862Z"
+                transform="translate(-.004061 0.000001)"
+                stroke="#eaac27"
+                strokeWidth="5"
+                fill={patternId ? `url(#${patternId})` : "#CCCCCC"}
+            />
         </svg>
     );
-}
+};
+
+export default Shield3SVG;

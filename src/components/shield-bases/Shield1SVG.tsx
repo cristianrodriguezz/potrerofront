@@ -1,12 +1,12 @@
-// components/shield-bases/Shield1SVG.tsx
-import React, { ReactNode } from "react";
+import React from "react";
 
 interface ShieldProps {
   className?: string;
-  children?: ReactNode;
+  children?: React.ReactNode;
+  patternId?: string;
 }
 
-const Shield1SVG: React.FC<ShieldProps> = ({ className, children }) => {
+const Shield1SVG: React.FC<ShieldProps> = ({ className, children, patternId }) => {
   return (
     <svg
       className={className}
@@ -19,7 +19,7 @@ const Shield1SVG: React.FC<ShieldProps> = ({ className, children }) => {
       </defs>
       <path
         d="M50,5 L90,20 C90,60 65,85 50,95 C35,85 10,60 10,20 L50,5 Z"
-        fill={children ? "url(#pattern1)" : "#CCCCCC"}
+        fill={patternId ? `url(#${patternId})` : "#CCCCCC"}
       />
     </svg>
   );

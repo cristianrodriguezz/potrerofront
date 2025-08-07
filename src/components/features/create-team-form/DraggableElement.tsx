@@ -203,7 +203,7 @@ const DraggableElement: React.FC<DraggableElementProps> = ({
 
         // RESTRICCIONES DE ESCALA
         const MIN_SCALE_REL = 0.2;
-        const MAX_SCALE_REL = 1;
+        const MAX_SCALE_REL = 2;
 
         // Aplicar restricciones
         newScaleRel = Math.max(
