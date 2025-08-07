@@ -1,8 +1,28 @@
-// ./components/shield-bases/Shield1SVG.tsx
-export default function Shield1SVG() {
+// components/shield-bases/Shield1SVG.tsx
+import React, { ReactNode } from "react";
+
+interface ShieldProps {
+  className?: string;
+  children?: ReactNode;
+}
+
+const Shield1SVG: React.FC<ShieldProps> = ({ className, children }) => {
   return (
-    <svg viewBox="0 0 200 200" className="text-gray-600">
-      <path d="M100,10 L180,40 L150,180 L50,180 L20,40 Z" fill="currentColor" />
+    <svg
+      className={className}
+      viewBox="0 0 100 100"
+      xmlns="http://www.w3.org/2000/svg"
+      preserveAspectRatio="xMidYMid meet"
+    >
+      <defs>
+        {children}
+      </defs>
+      <path
+        d="M50,5 L90,20 C90,60 65,85 50,95 C35,85 10,60 10,20 L50,5 Z"
+        fill={children ? "url(#pattern1)" : "#CCCCCC"}
+      />
     </svg>
   );
-}
+};
+
+export default Shield1SVG;
