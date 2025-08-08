@@ -13,12 +13,16 @@ const Pattern1SVG: React.FC<PatternProps> = ({
   rotation = 0,
   scale = 1,
   density = 5,
-  elementSize = 1,  // Nuevo parámetro
+  elementSize = 1,
   primaryColor = "#ff0000",
   secondaryColor = "#ffffff"
 }) => {
-  const size = 100 / density * scale;
-  const strokeWidth = size * 0.2 * elementSize;  // Usamos elementSize para el grosor
+  // Tamaño base de la celda del patrón
+  const baseSize = 200 / density;
+  // Tamaño final escalado
+  const size = baseSize * scale;
+  // Grosor calculado como porcentaje del tamaño base (no del escalado)
+  const strokeWidth = baseSize * 1.1 * elementSize;
   
   return (
     <pattern
@@ -35,7 +39,7 @@ const Pattern1SVG: React.FC<PatternProps> = ({
         x2="0" 
         y2={size} 
         stroke={primaryColor} 
-        strokeWidth={strokeWidth}  // Aplicado aquí
+        strokeWidth={strokeWidth}
       />
     </pattern>
   );

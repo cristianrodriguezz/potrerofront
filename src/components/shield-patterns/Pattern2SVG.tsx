@@ -1,4 +1,3 @@
-// Pattern2SVG.tsx (Puntos)
 import React from "react";
 
 interface PatternProps {
@@ -18,8 +17,12 @@ const Pattern2SVG: React.FC<PatternProps> = ({
   primaryColor = "#3182ce",
   secondaryColor = "#ffffff"
 }) => {
-  const size = 100 / density * scale;
-  const dotSize = size * 0.4 * elementSize;
+  // Tamaño base de la celda sin escalar
+  const baseSize = 90 / density;
+  // Tamaño final escalado
+  const size = baseSize * scale;
+  // Tamaño del punto proporcional al tamaño base
+  const dotSize = baseSize * 0.4 * elementSize;
   
   return (
     <pattern

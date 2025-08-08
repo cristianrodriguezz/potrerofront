@@ -1,4 +1,4 @@
-import ShieldCustomizer from "@/components/features/create-team-form/ShieldCustomizer";
+import ShieldCustomizer from "@/components/features/create-team-form/ShieldCanva";
 
 export default function ShieldPage() {
   return (

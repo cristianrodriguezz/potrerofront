@@ -1,17 +1,53 @@
-// Pattern3SVG.tsx (Cuadrícula)
 import React from "react";
 
-const Pattern3SVG = () => (
-  <pattern
-    id="pattern3"
-    patternUnits="userSpaceOnUse"
-    width="20"
-    height="20"
-  >
-    <rect width="20" height="20" fill="#ffffff" />
-    <path d="M0,0 L20,0 M0,20 L20,20 M0,0 L0,20 M20,0 L20,20" 
-          stroke="#38a169" strokeWidth="2" />
-  </pattern>
-);
+interface PatternProps {
+  rotation?: number;
+  scale?: number;
+  density?: number;
+  primaryColor?: string;
+  secondaryColor?: string;
+  elementSize?: number;
+}
 
-export default Pattern3SVG;
+const Pattern4SVG: React.FC<PatternProps> = ({
+  rotation = 0,
+  scale = 1,
+  density = 5,
+  elementSize = 1,
+  primaryColor = "#38a169",
+  secondaryColor = "#ffffff"
+}) => {
+  // Tamaño base de la celda (ajustado por densidad)
+  const baseSize = 200 / density;
+  // Tamaño final escalado
+  const size = baseSize * scale;
+  // Grosor de línea relativo al tamaño base
+  const strokeWidth = baseSize * 0.1 * elementSize;
+
+  // Construir el path de la cuadrícula
+  const pathData = `
+    M0,0 L${size},0
+    M0,${size} L${size},${size}
+    M0,0 L0,${size}
+    M${size},0 L${size},${size}
+  `;
+
+  return (
+    <pattern
+      id="pattern3"
+      patternUnits="userSpaceOnUse"
+      width={size}
+      height={size}
+      patternTransform={`rotate(${rotation})`}
+    >
+      <rect width={size} height={size} fill={secondaryColor} />
+      <path 
+        d={pathData} 
+        stroke={primaryColor} 
+        strokeWidth={strokeWidth}
+      />
+    </pattern>
+  );
+};
+
+export default Pattern4SVG;
